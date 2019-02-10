@@ -68,6 +68,11 @@ namespace ProtoclustNet
         /// <param name="protos"></param>
         public static void hier(double[] d, int ndim, int verbose, int[] merge, double[] height, int[] order, int[] protos)
         {
+            /**************************************************************************
+             * Original C code:
+             * https://github.com/jacobbien/protoclust/blob/master/src/hier.c
+             **************************************************************************/
+
             int i = 0;
             int j = 0;
             int k = 0;
@@ -389,14 +394,6 @@ namespace ProtoclustNet
                 order[i] = cur.i + 1;
                 cur = cur.next;
             }
-
-            //cur = clusters[imerge];
-            //Cluster curnext;
-            //for (i = 0; i < n; i++)
-            //{
-            //    curnext = cur.next;
-            //    cur = curnext;
-            //}
         }
 
         private static int lt(int i, int j, int n)
@@ -643,7 +640,7 @@ namespace ProtoclustNet
         private static void R_isort(int[] x, int n)
         {
             int v;
-            bool nalast = true;
+            //bool nalast = true;
             int i, j, h;
 
             for (h = 1; h <= n / 9; h = 3 * h + 1) ;
@@ -652,8 +649,10 @@ namespace ProtoclustNet
                 {
                     v = x[i];
                     j = i;
-                    while (j >= h && icmp(x[j - h], v, nalast) > 0)
-                    { x[j] = x[j - h]; j -= h; }
+                    while (j >= h && icmp(x[j - h], v, true) > 0)
+                    {
+                        x[j] = x[j - h]; j -= h;
+                    }
                     x[j] = v;
                 }
         }
@@ -677,7 +676,9 @@ namespace ProtoclustNet
                     v = x[i]; iv = indx[i];
                     j = i;
                     while (j >= h && rcmp(x[j - h], v, true) > 0)
-                    { x[j] = x[j - h]; indx[j] = indx[j - h]; j -= h; }
+                    {
+                        x[j] = x[j - h]; indx[j] = indx[j - h]; j -= h;
+                    }
                     x[j] = v; indx[j] = iv;
                 }
             return x;
