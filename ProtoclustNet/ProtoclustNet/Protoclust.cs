@@ -1,9 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ProtoclustNet
 {
+    /// <summary>
+    /// Minimax linkage agglomerative clustering.
+    /// <para>https://github.com/jacobbien/protoclust</para>
+    /// </summary>
     public static class Protoclust
     {
         /// <summary>
@@ -52,118 +54,6 @@ namespace ProtoclustNet
         {
             Compute(ToDist(d), out merge, out height, out order, out protos);
         }
-
-        #region R functions
-        /// <summary>
-        /// The lower triangle of the distance matrix stored by columns in a vector, say do. 
-        /// If n is the number of observations, i.e., n &#60;- attr(do, "Size"), then for i &#60; j ≤ n, 
-        /// the dissimilarity between (row) i and j is do[n*(i-1) - i*(i-1)/2 + j-i]. 
-        /// The length of the vector is n*(n-1)/2, i.e., of order n^2. 
-        /// </summary>
-        /// <param name="distMatrix"></param>
-        /// <returns></returns>
-        public static double[] ToDist(double[][] distMatrix)
-        {
-            int n = distMatrix.Length;
-
-            double[] dist = new double[n * (n - 1) / 2];
-
-            for (int i = 1; i <= n; i++)
-            {
-                for (int j = i + 1; j <= n; j++)
-                {
-                    var index = (n * (i - 1) - i * (i - 1) / 2 + j - i) - 1;
-                    dist[index] = distMatrix[i - 1][j - 1];
-                }
-            }
-            return dist;
-        }
-
-        /// <summary>
-        /// http://docs.rexamine.com/R-devel/sort_8c_source.html
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="nalast"></param>
-        /// <returns></returns>
-        private static int rcmp(double x, double y, bool nalast)
-        {
-            bool nax = double.IsNaN(x);
-            bool nay = double.IsNaN(y);
-            if (nax && nay) return 0;
-            if (nax) return nalast ? 1 : -1;
-            if (nay) return nalast ? -1 : 1;
-            if (x < y) return -1;
-            if (x > y) return 1;
-            return 0;
-        }
-
-        /// <summary>
-        /// http://docs.rexamine.com/R-devel/sort_8c_source.html
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="nalast"></param>
-        /// <returns></returns>
-        private static int icmp(int? x, int? y, bool nalast)
-        {
-            if (x == null && y == null) return 0;
-            if (x == null) return nalast ? 1 : -1;
-            if (y == null) return nalast ? -1 : 1;
-            if (x < y) return -1;
-            if (x > y) return 1;
-            return 0;
-        }
-
-        /// <summary>
-        /// http://docs.rexamine.com/R-devel/sort_8c_source.html#l00199
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="n"></param>
-        private static void R_isort(int[] x, int n)
-        {
-            int v;
-            bool nalast = true;
-            int i, j, h;
-
-            for (h = 1; h <= n / 9; h = 3 * h + 1) ;
-            for (; h > 0; h /= 3)
-                for (i = h; i < n; i++)
-                {
-                    v = x[i];
-                    j = i;
-                    while (j >= h && icmp(x[j - h], v, nalast) > 0)
-                    { x[j] = x[j - h]; j -= h; }
-                    x[j] = v;
-                }
-        }
-
-        /// <summary>
-        /// http://docs.rexamine.com/R-devel/sort_8c_source.html
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="indx"></param>
-        /// <param name="n"></param>
-        /// <returns></returns>
-        private static double[] rsort_with_index(double[] x, int[] indx, int n)
-        {
-            double v;
-            int i, j, h, iv;
-
-            for (h = 1; h <= n / 9; h = 3 * h + 1) ;
-            for (; h > 0; h /= 3)
-                for (i = h; i < n; i++)
-                {
-                    v = x[i]; iv = indx[i];
-                    j = i;
-                    while (j >= h && rcmp(x[j - h], v, true) > 0)
-                    { x[j] = x[j - h]; indx[j] = indx[j - h]; j -= h; }
-                    x[j] = v; indx[j] = iv;
-                }
-            return x;
-        }
-
-        #endregion
 
         /// <summary>
         /// Minimax linkage agglomerative clustering.
@@ -682,6 +572,117 @@ namespace ProtoclustNet
             }
             return dmm;
         }
+
+        #region R functions
+        /// <summary>
+        /// The lower triangle of the distance matrix stored by columns in a vector, say do. 
+        /// If n is the number of observations, i.e., n &#60;- attr(do, "Size"), then for i &#60; j ≤ n, 
+        /// the dissimilarity between (row) i and j is do[n*(i-1) - i*(i-1)/2 + j-i]. 
+        /// The length of the vector is n*(n-1)/2, i.e., of order n^2. 
+        /// </summary>
+        /// <param name="distMatrix"></param>
+        /// <returns></returns>
+        public static double[] ToDist(double[][] distMatrix)
+        {
+            int n = distMatrix.Length;
+
+            double[] dist = new double[n * (n - 1) / 2];
+
+            for (int i = 1; i <= n; i++)
+            {
+                for (int j = i + 1; j <= n; j++)
+                {
+                    var index = (n * (i - 1) - i * (i - 1) / 2 + j - i) - 1;
+                    dist[index] = distMatrix[i - 1][j - 1];
+                }
+            }
+            return dist;
+        }
+
+        /// <summary>
+        /// http://docs.rexamine.com/R-devel/sort_8c_source.html
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="nalast"></param>
+        /// <returns></returns>
+        private static int rcmp(double x, double y, bool nalast)
+        {
+            bool nax = double.IsNaN(x);
+            bool nay = double.IsNaN(y);
+            if (nax && nay) return 0;
+            if (nax) return nalast ? 1 : -1;
+            if (nay) return nalast ? -1 : 1;
+            if (x < y) return -1;
+            if (x > y) return 1;
+            return 0;
+        }
+
+        /// <summary>
+        /// http://docs.rexamine.com/R-devel/sort_8c_source.html
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="nalast"></param>
+        /// <returns></returns>
+        private static int icmp(int? x, int? y, bool nalast)
+        {
+            if (x == null && y == null) return 0;
+            if (x == null) return nalast ? 1 : -1;
+            if (y == null) return nalast ? -1 : 1;
+            if (x < y) return -1;
+            if (x > y) return 1;
+            return 0;
+        }
+
+        /// <summary>
+        /// http://docs.rexamine.com/R-devel/sort_8c_source.html#l00199
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="n"></param>
+        private static void R_isort(int[] x, int n)
+        {
+            int v;
+            bool nalast = true;
+            int i, j, h;
+
+            for (h = 1; h <= n / 9; h = 3 * h + 1) ;
+            for (; h > 0; h /= 3)
+                for (i = h; i < n; i++)
+                {
+                    v = x[i];
+                    j = i;
+                    while (j >= h && icmp(x[j - h], v, nalast) > 0)
+                    { x[j] = x[j - h]; j -= h; }
+                    x[j] = v;
+                }
+        }
+
+        /// <summary>
+        /// http://docs.rexamine.com/R-devel/sort_8c_source.html
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="indx"></param>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        private static double[] rsort_with_index(double[] x, int[] indx, int n)
+        {
+            double v;
+            int i, j, h, iv;
+
+            for (h = 1; h <= n / 9; h = 3 * h + 1) ;
+            for (; h > 0; h /= 3)
+                for (i = h; i < n; i++)
+                {
+                    v = x[i]; iv = indx[i];
+                    j = i;
+                    while (j >= h && rcmp(x[j - h], v, true) > 0)
+                    { x[j] = x[j - h]; indx[j] = indx[j - h]; j -= h; }
+                    x[j] = v; indx[j] = iv;
+                }
+            return x;
+        }
+        #endregion
 
         private class Cluster
         {
