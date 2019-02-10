@@ -2,21 +2,32 @@
 
 namespace ProtoclustNet
 {
+    /*
+     * Bien, J., and Tibshirani, R. (2011), "Hierarchical Clustering
+     * with Prototypes via Minimax Linkage," \emph{The Journal of the American
+     * Statistical Association}, 106(495), 1075-1084.
+     * 
+     * Murtagh, F. (1983), "A Survey of Recent Advances in Hierarchical Clustering
+     * Algorithms," \emph{The Computer Journal}, \bold{26}, 354--359.
+     */
+
     /// <summary>
-    /// Minimax linkage agglomerative clustering.
+    /// Hierarchical Clustering with Prototypes: Minimax Linkage.
     /// <para>https://github.com/jacobbien/protoclust</para>
     /// </summary>
     public static class Protoclust
     {
         /// <summary>
-        /// Minimax linkage agglomerative clustering.
+        /// Hierarchical Clustering with Prototypes: Minimax Linkage.
+        /// <para>Performs minimax linkage hierarchical clustering given a set of dissimilarities. </para>
         /// <para>https://github.com/jacobbien/protoclust</para>
         /// </summary>
         /// <param name="d">The distance vector</param>
         /// <param name="merge"></param>
         /// <param name="height"></param>
         /// <param name="order"></param>
-        /// <param name="protos"></param>
+        /// <param name="protos">a vector of length n - 1.  The i-th element is the index of the prototype
+        /// corresponding to the cluster formed on the i-th merge</param>
         public static void Compute(double[] d, out int[][] merge, out double[] height, out int[] order, out int[] protos)
         {
             int nn = d.Length;
@@ -42,14 +53,16 @@ namespace ProtoclustNet
         }
 
         /// <summary>
-        /// Minimax linkage agglomerative clustering.
+        /// Hierarchical Clustering with Prototypes: Minimax Linkage.
+        /// <para>Performs minimax linkage hierarchical clustering given a set of dissimilarities. </para>
         /// <para>https://github.com/jacobbien/protoclust</para>
         /// </summary>
         /// <param name="d">The distance matrix</param>
         /// <param name="merge"></param>
         /// <param name="height"></param>
         /// <param name="order"></param>
-        /// <param name="protos"></param>
+        /// <param name="protos">a vector of length n - 1.  The i-th element is the index of the prototype
+        /// corresponding to the cluster formed on the i-th merge</param>
         public static void Compute(double[][] d, out int[][] merge, out double[] height, out int[] order, out int[] protos)
         {
             Compute(ToDist(d), out merge, out height, out order, out protos);
