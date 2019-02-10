@@ -296,7 +296,7 @@ namespace ProtoclustNet
                 // heights are constant from i to i+count
                 if (count > 0)
                 {
-                    Console.WriteLine("R_isort(&o[i], count + 1);");
+                    Console.WriteLine("Warning: not handling 'R_isort(&o[i], count + 1);'");
                     //R_isort(&o[i], count + 1);
                 }
                 i += count;
