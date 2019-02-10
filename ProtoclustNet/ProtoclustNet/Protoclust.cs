@@ -27,18 +27,16 @@ namespace ProtoclustNet
 
             hier(d, n, 0, mergeVect, height, order, protos);
 
-            int[][] mergeArr = new int[2][];
+            merge = new int[2][];
 
-            mergeArr[0] = new int[n - 1];
-            mergeArr[1] = new int[n - 1];
+            merge[0] = new int[n - 1];
+            merge[1] = new int[n - 1];
 
             for (int r = 0; r < n - 1; r++)
             {
-                mergeArr[0][r] = mergeVect[2 * r];
-                mergeArr[1][r] = mergeVect[2 * r + 1];
+                merge[0][r] = mergeVect[2 * r];
+                merge[1][r] = mergeVect[2 * r + 1];
             }
-
-            merge = mergeArr;
         }
 
         /// <summary>
@@ -56,14 +54,17 @@ namespace ProtoclustNet
         }
 
         #region R functions
-        private static double[] ToDist(double[][] distMatrix)
+        /// <summary>
+        /// The lower triangle of the distance matrix stored by columns in a vector, say do. 
+        /// If n is the number of observations, i.e., n &#60;- attr(do, "Size"), then for i &#60; j ≤ n, 
+        /// the dissimilarity between (row) i and j is do[n*(i-1) - i*(i-1)/2 + j-i]. 
+        /// The length of the vector is n*(n-1)/2, i.e., of order n^2. 
+        /// </summary>
+        /// <param name="distMatrix"></param>
+        /// <returns></returns>
+        public static double[] ToDist(double[][] distMatrix)
         {
             int n = distMatrix.Length;
-
-            // The lower triangle of the distance matrix stored by columns in a vector, say do. 
-            // If n is the number of observations, i.e., n <- attr(do, "Size"), then for i < j ≤ n, 
-            // the dissimilarity between (row) i and j is do[n*(i-1) - i*(i-1)/2 + j-i]. 
-            // The length of the vector is n*(n-1)/2, i.e., of order n^2. 
 
             double[] dist = new double[n * (n - 1) / 2];
 
@@ -78,6 +79,13 @@ namespace ProtoclustNet
             return dist;
         }
 
+        /// <summary>
+        /// http://docs.rexamine.com/R-devel/sort_8c_source.html
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="nalast"></param>
+        /// <returns></returns>
         private static int rcmp(double x, double y, bool nalast)
         {
             bool nax = double.IsNaN(x);
@@ -90,6 +98,13 @@ namespace ProtoclustNet
             return 0;
         }
 
+        /// <summary>
+        /// http://docs.rexamine.com/R-devel/sort_8c_source.html
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="nalast"></param>
+        /// <returns></returns>
         private static int icmp(int? x, int? y, bool nalast)
         {
             if (x == null && y == null) return 0;
@@ -100,6 +115,11 @@ namespace ProtoclustNet
             return 0;
         }
 
+        /// <summary>
+        /// http://docs.rexamine.com/R-devel/sort_8c_source.html#l00199
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="n"></param>
         private static void R_isort(int[] x, int n)
         {
             int v;
@@ -118,6 +138,13 @@ namespace ProtoclustNet
                 }
         }
 
+        /// <summary>
+        /// http://docs.rexamine.com/R-devel/sort_8c_source.html
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="indx"></param>
+        /// <param name="n"></param>
+        /// <returns></returns>
         private static double[] rsort_with_index(double[] x, int[] indx, int n)
         {
             double v;
